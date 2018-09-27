@@ -15,6 +15,10 @@
 @property (strong, nonatomic) NSMutableArray <UIView *>*separateLineArr;///<竖分割线
 @property (copy, nonatomic) void (^handler)(NSInteger idx, UIButton *item);
 
+@property (assign, nonatomic) CGFloat leftSpace;
+@property (assign, nonatomic) CGFloat middleSpace;
+@property (assign, nonatomic) CGFloat rightSpace;
+
 @end
 
 @implementation YQSegmentView
@@ -34,8 +38,11 @@
     
     segmentView.btnItemsArr = [[NSMutableArray alloc] init];
     segmentView.separateLineArr = [[NSMutableArray alloc] init];
+    segmentView.leftSpace   = 100;
+    segmentView.middleSpace = 80;
+    segmentView.rightSpace  = 100;
     for (NSInteger i=0; i<titlesArr.count; i++) {
-        UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(30+i*(90+20), (scrollView.frame.size.height-42)/2, 90, 42)];
+        UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(segmentView.leftSpace+i*(90+segmentView.middleSpace), (scrollView.frame.size.height-42)/2, 90, 42)];
         [btn setTitleColor:UIColor.grayColor forState:UIControlStateNormal];
         [btn setTitleColor:UIColor.grayColor forState:UIControlStateHighlighted];
         [btn setTitleColor:UIColor.orangeColor forState:UIControlStateSelected];
@@ -51,11 +58,11 @@
             btn.frame = CGRectMake(btn.frame.origin.x, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
         }
         else {
-            btn.frame = CGRectMake(CGRectGetMaxX(segmentView.btnItemsArr[i-1].frame)+20, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
+            btn.frame = CGRectMake(CGRectGetMaxX(segmentView.btnItemsArr[i-1].frame)+segmentView.middleSpace, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
         }
         btn.titleLabel.font = [UIFont systemFontOfSize:16];
     }
-    scrollView.contentSize = CGSizeMake(CGRectGetMaxX(segmentView.btnItemsArr.lastObject.frame)+30, 0);
+    scrollView.contentSize = CGSizeMake(CGRectGetMaxX(segmentView.btnItemsArr.lastObject.frame)+segmentView.rightSpace, 0);
     
     UIButton *selectedBtn = segmentView.btnItemsArr.firstObject;
     UIView *line = [[UIView alloc] initWithFrame:CGRectMake(selectedBtn.frame.origin.x+0.1*selectedBtn.frame.size.width, CGRectGetMaxY(selectedBtn.frame), 0.8*selectedBtn.frame.size.width, 1.5)];
@@ -88,7 +95,7 @@
         //
         for (NSInteger i=0; i<_btnItemsArr.count-1; i++) {
             UIButton *btn = _btnItemsArr[i];
-            UIView *line = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(btn.frame)+9, btn.frame.origin.y+0.25*btn.frame.size.height, 1, 0.5*btn.frame.size.height)];
+            UIView *line = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(btn.frame)+0.5*_middleSpace, btn.frame.origin.y+0.25*btn.frame.size.height, 1, 0.5*btn.frame.size.height)];
             line.backgroundColor = UIColor.greenColor;
             [_scrollView addSubview:line];
             [_separateLineArr addObject:line];
@@ -119,7 +126,7 @@
             btn.frame = CGRectMake(btn.frame.origin.x, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
         }
         else {
-            btn.frame = CGRectMake(CGRectGetMaxX(_btnItemsArr[i-1].frame)+20, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
+            btn.frame = CGRectMake(CGRectGetMaxX(_btnItemsArr[i-1].frame)+_middleSpace, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
         }
         btn.titleLabel.font = realFont;
     }
@@ -131,7 +138,7 @@
         }
     }
     //update content size
-    _scrollView.contentSize = CGSizeMake(CGRectGetMaxX(_btnItemsArr.lastObject.frame)+30, 0);
+    _scrollView.contentSize = CGSizeMake(CGRectGetMaxX(_btnItemsArr.lastObject.frame)+_rightSpace, 0);
     //update separate line
     [self setEnabledSeparateLine:_enabledSeparateLine];
 }
