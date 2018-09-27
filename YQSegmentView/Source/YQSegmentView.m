@@ -10,10 +10,11 @@
 
 @interface YQSegmentView ()
 
-@property (strong, nonatomic) UIScrollView *itemsScrollView;///<装多个标签的容器
+@property (strong, nonatomic) UIScrollView *scrollView;///<装多个标签的容器
 @property (strong, nonatomic) NSMutableArray <UIButton *>*btnItemsArr;///<横排的多个按钮
-@property (strong, nonatomic) UIView *indicateLine;///<短线（指示当前被选中的item）
+@property (strong, nonatomic) NSMutableArray <UIView *>*separateLineArr;///<竖分割线
 @property (copy, nonatomic) void (^handler)(NSInteger idx, UIButton *item);
+
 @end
 
 @implementation YQSegmentView
@@ -22,18 +23,19 @@
 + (instancetype)segmentWithFrame:(CGRect)frame titles:(NSArray <NSString *>*)titlesArr handler:(void (^)(NSInteger idx, UIButton *item))handler
 {
     YQSegmentView *segmentView = [[YQSegmentView alloc] initWithFrame:frame];
-    UIScrollView *itemsScrollView = [[UIScrollView alloc] initWithFrame:segmentView.bounds];
-    itemsScrollView.backgroundColor = UIColor.whiteColor;
-    itemsScrollView.contentSize = CGSizeMake(itemsScrollView.frame.size.width, 0);
-    itemsScrollView.showsVerticalScrollIndicator = NO;
-    itemsScrollView.showsHorizontalScrollIndicator = NO;
-    [segmentView addSubview:itemsScrollView];
-    segmentView.itemsScrollView = itemsScrollView;
+    UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:segmentView.bounds];
+    scrollView.backgroundColor = UIColor.whiteColor;
+    scrollView.contentSize = CGSizeMake(scrollView.frame.size.width, 0);
+    scrollView.showsVerticalScrollIndicator = NO;
+    scrollView.showsHorizontalScrollIndicator = NO;
+    [segmentView addSubview:scrollView];
+    segmentView.scrollView = scrollView;
     segmentView.handler = handler;
     
     segmentView.btnItemsArr = [[NSMutableArray alloc] init];
+    segmentView.separateLineArr = [[NSMutableArray alloc] init];
     for (NSInteger i=0; i<titlesArr.count; i++) {
-        UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(30+i*(90+20), (itemsScrollView.frame.size.height-42)/2, 90, 42)];
+        UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(30+i*(90+20), (scrollView.frame.size.height-42)/2, 90, 42)];
         [btn setTitleColor:UIColor.grayColor forState:UIControlStateNormal];
         [btn setTitleColor:UIColor.grayColor forState:UIControlStateHighlighted];
         [btn setTitleColor:UIColor.orangeColor forState:UIControlStateSelected];
@@ -41,7 +43,7 @@
         btn.tag = i;
         [btn setTitle:titlesArr[i] forState:UIControlStateNormal];
         [btn addTarget:segmentView action:@selector(tapBtnItems:) forControlEvents:UIControlEventTouchUpInside];
-        [itemsScrollView addSubview:btn];
+        [scrollView addSubview:btn];
         [segmentView.btnItemsArr addObject:btn];
         //
         CGSize bestSize = [btn sizeThatFits:CGSizeMake(0, 0)];
@@ -53,12 +55,12 @@
         }
         btn.titleLabel.font = [UIFont systemFontOfSize:16];
     }
-    itemsScrollView.contentSize = CGSizeMake(CGRectGetMaxX(segmentView.btnItemsArr.lastObject.frame)+30, 0);
+    scrollView.contentSize = CGSizeMake(CGRectGetMaxX(segmentView.btnItemsArr.lastObject.frame)+30, 0);
     
     UIButton *selectedBtn = segmentView.btnItemsArr.firstObject;
     UIView *line = [[UIView alloc] initWithFrame:CGRectMake(selectedBtn.frame.origin.x+0.1*selectedBtn.frame.size.width, CGRectGetMaxY(selectedBtn.frame), 0.8*selectedBtn.frame.size.width, 1.5)];
     line.backgroundColor = UIColor.orangeColor;
-    [itemsScrollView addSubview:line];
+    [scrollView addSubview:line];
     segmentView.indicateLine = line;
     [segmentView tapBtnItems:selectedBtn];
 
@@ -72,6 +74,33 @@
     // Drawing code
 }
 */
+
+#pragma mark - setter getter
+- (void)setEnabledSeparateLine:(BOOL)enabledSeparateLine
+{
+    _enabledSeparateLine = enabledSeparateLine;
+    if (enabledSeparateLine) {
+        //
+        for (NSInteger i=0; i<_separateLineArr.count; i++) {
+            [_separateLineArr[i] removeFromSuperview];
+        }
+        [_separateLineArr removeAllObjects];
+        //
+        for (NSInteger i=0; i<_btnItemsArr.count-1; i++) {
+            UIButton *btn = _btnItemsArr[i];
+            UIView *line = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(btn.frame)+9, btn.frame.origin.y+0.25*btn.frame.size.height, 1, 0.5*btn.frame.size.height)];
+            line.backgroundColor = UIColor.greenColor;
+            [_scrollView addSubview:line];
+            [_separateLineArr addObject:line];
+        }
+    }
+    else {
+        for (NSInteger i=0; i<_separateLineArr.count; i++) {
+            [_separateLineArr[i] removeFromSuperview];
+        }
+        [_separateLineArr removeAllObjects];
+    }
+}
 
 #pragma mark - config style
 - (void)setTitle:(NSString *)title atIndex:(NSUInteger)idx
@@ -102,8 +131,9 @@
         }
     }
     //update content size
-    _itemsScrollView.contentSize = CGSizeMake(CGRectGetMaxX(_btnItemsArr.lastObject.frame)+30, 0);
-
+    _scrollView.contentSize = CGSizeMake(CGRectGetMaxX(_btnItemsArr.lastObject.frame)+30, 0);
+    //update separate line
+    [self setEnabledSeparateLine:_enabledSeparateLine];
 }
 
 - (void)setTitleSelectedColor:(UIColor *)selColor unselectedColor:(UIColor *)unselColor
@@ -115,6 +145,7 @@
     }
     self.indicateLine.backgroundColor = selColor;
 }
+
 
 #pragma mark - Actions
 - (void)tapBtnItems:(UIButton *)sender
@@ -133,12 +164,12 @@
     _indicateLine.frame = CGRectMake(sender.frame.origin.x+0.1*sender.frame.size.width, _indicateLine.frame.origin.y, sender.frame.size.width*0.8, _indicateLine.frame.size.height);
 
     ////{ 焦点居中
-    CGFloat visibleW = self.itemsScrollView.frame.size.width;
-    CGFloat maxW = self.itemsScrollView.contentSize.width;
+    CGFloat visibleW = self.scrollView.frame.size.width;
+    CGFloat maxW = self.scrollView.contentSize.width;
     CGFloat offsetX = sender.center.x - visibleW/2.0;
     if (maxW > visibleW) {
         if (offsetX >= 0 && maxW-offsetX>=visibleW) {
-            [self.itemsScrollView setContentOffset:CGPointMake(offsetX, 0) animated:YES];
+            [self.scrollView setContentOffset:CGPointMake(offsetX, 0) animated:YES];
         }
     }
     ////}
