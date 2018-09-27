@@ -38,9 +38,9 @@
     
     segmentView.btnItemsArr = [[NSMutableArray alloc] init];
     segmentView.separateLineArr = [[NSMutableArray alloc] init];
-    segmentView.leftSpace   = 100;
-    segmentView.middleSpace = 80;
-    segmentView.rightSpace  = 100;
+    segmentView.leftSpace   = 30;
+    segmentView.middleSpace = 20;
+    segmentView.rightSpace  = 30;
     for (NSInteger i=0; i<titlesArr.count; i++) {
         UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(segmentView.leftSpace+i*(90+segmentView.middleSpace), (scrollView.frame.size.height-42)/2, 90, 42)];
         [btn setTitleColor:UIColor.grayColor forState:UIControlStateNormal];
@@ -55,7 +55,7 @@
         //
         CGSize bestSize = [btn sizeThatFits:CGSizeMake(0, 0)];
         if (i==0) {
-            btn.frame = CGRectMake(btn.frame.origin.x, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
+            btn.frame = CGRectMake(segmentView.leftSpace, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
         }
         else {
             btn.frame = CGRectMake(CGRectGetMaxX(segmentView.btnItemsArr[i-1].frame)+segmentView.middleSpace, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
@@ -63,6 +63,21 @@
         btn.titleLabel.font = [UIFont systemFontOfSize:16];
     }
     scrollView.contentSize = CGSizeMake(CGRectGetMaxX(segmentView.btnItemsArr.lastObject.frame)+segmentView.rightSpace, 0);
+    //
+    if (scrollView.contentSize.width < segmentView.scrollView.frame.size.width) {
+        scrollView.contentSize = CGSizeMake(segmentView.scrollView.frame.size.width, 0);
+        segmentView.leftSpace = (scrollView.contentSize.width - (CGRectGetMaxX(segmentView.btnItemsArr.lastObject.frame)-segmentView.btnItemsArr.firstObject.frame.origin.x))/2;
+        for (NSInteger i=0; i<segmentView.btnItemsArr.count; i++) {
+            UIButton *btn = segmentView.btnItemsArr[i];
+            if (i==0) {
+                btn.frame = CGRectMake(segmentView.leftSpace, btn.frame.origin.y, btn.frame.size.width, btn.frame.size.height);
+            }
+            else {
+                btn.frame = CGRectMake(CGRectGetMaxX(segmentView.btnItemsArr[i-1].frame)+segmentView.middleSpace, btn.frame.origin.y, btn.frame.size.width, btn.frame.size.height);
+            }
+        }
+        scrollView.scrollEnabled = NO;
+    }
     
     UIButton *selectedBtn = segmentView.btnItemsArr.firstObject;
     UIView *line = [[UIView alloc] initWithFrame:CGRectMake(selectedBtn.frame.origin.x+0.1*selectedBtn.frame.size.width, CGRectGetMaxY(selectedBtn.frame), 0.8*selectedBtn.frame.size.width, 1.5)];
@@ -116,31 +131,33 @@
         return;
     }
     [self.btnItemsArr[idx] setTitle:title forState:UIControlStateNormal];
-    //layout frames
-    for (NSInteger i=0; i<_btnItemsArr.count; i++) {
-        UIButton *btn = _btnItemsArr[i];
-        UIFont *realFont = btn.titleLabel.font;
-        btn.titleLabel.font = [UIFont boldSystemFontOfSize:16];
-        CGSize bestSize = [btn sizeThatFits:CGSizeMake(0, 0)];
-        if (i==0) {
-            btn.frame = CGRectMake(btn.frame.origin.x, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
+    if (self.scrollView.scrollEnabled) {
+        //layout frames
+        for (NSInteger i=0; i<_btnItemsArr.count; i++) {
+            UIButton *btn = _btnItemsArr[i];
+            UIFont *realFont = btn.titleLabel.font;
+            btn.titleLabel.font = [UIFont boldSystemFontOfSize:16];
+            CGSize bestSize = [btn sizeThatFits:CGSizeMake(0, 0)];
+            if (i==0) {
+                btn.frame = CGRectMake(btn.frame.origin.x, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
+            }
+            else {
+                btn.frame = CGRectMake(CGRectGetMaxX(_btnItemsArr[i-1].frame)+_middleSpace, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
+            }
+            btn.titleLabel.font = realFont;
         }
-        else {
-            btn.frame = CGRectMake(CGRectGetMaxX(_btnItemsArr[i-1].frame)+_middleSpace, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
+        //update indicate line
+        for (NSInteger i=0; i<_btnItemsArr.count; i++) {
+            if (_btnItemsArr[i].selected == YES) {
+                UIButton *sender = _btnItemsArr[i];
+                _indicateLine.frame = CGRectMake(sender.frame.origin.x+0.1*sender.frame.size.width, _indicateLine.frame.origin.y, sender.frame.size.width*0.8, _indicateLine.frame.size.height);
+            }
         }
-        btn.titleLabel.font = realFont;
+        //update content size
+        _scrollView.contentSize = CGSizeMake(CGRectGetMaxX(_btnItemsArr.lastObject.frame)+_rightSpace, 0);
+        //update separate line
+        [self setEnabledSeparateLine:_enabledSeparateLine];
     }
-    //update indicate line
-    for (NSInteger i=0; i<_btnItemsArr.count; i++) {
-        if (_btnItemsArr[i].selected == YES) {
-            UIButton *sender = _btnItemsArr[i];
-            _indicateLine.frame = CGRectMake(sender.frame.origin.x+0.1*sender.frame.size.width, _indicateLine.frame.origin.y, sender.frame.size.width*0.8, _indicateLine.frame.size.height);
-        }
-    }
-    //update content size
-    _scrollView.contentSize = CGSizeMake(CGRectGetMaxX(_btnItemsArr.lastObject.frame)+_rightSpace, 0);
-    //update separate line
-    [self setEnabledSeparateLine:_enabledSeparateLine];
 }
 
 - (void)setTitleSelectedColor:(UIColor *)selColor unselectedColor:(UIColor *)unselColor
@@ -171,12 +188,19 @@
     _indicateLine.frame = CGRectMake(sender.frame.origin.x+0.1*sender.frame.size.width, _indicateLine.frame.origin.y, sender.frame.size.width*0.8, _indicateLine.frame.size.height);
 
     ////{ 焦点居中
-    CGFloat visibleW = self.scrollView.frame.size.width;
-    CGFloat maxW = self.scrollView.contentSize.width;
-    CGFloat offsetX = sender.center.x - visibleW/2.0;
-    if (maxW > visibleW) {
-        if (offsetX >= 0 && maxW-offsetX>=visibleW) {
-            [self.scrollView setContentOffset:CGPointMake(offsetX, 0) animated:YES];
+    if (self.scrollView.scrollEnabled) {
+        CGFloat visibleW = self.scrollView.frame.size.width;
+        CGFloat maxW = self.scrollView.contentSize.width;
+        CGFloat offsetX = sender.center.x - visibleW/2.0;
+        if (maxW > visibleW) {
+            if (offsetX >= 0) {
+                if (maxW-offsetX>=visibleW) {
+                    [self.scrollView setContentOffset:CGPointMake(offsetX, 0) animated:YES];
+                }
+                else {
+                    [self.scrollView setContentOffset:CGPointMake(maxW-visibleW, 0) animated:YES];
+                }
+            }
         }
     }
     ////}
