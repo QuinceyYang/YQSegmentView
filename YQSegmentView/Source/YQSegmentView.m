@@ -135,9 +135,9 @@
     ////{ 焦点居中
     CGFloat visibleW = self.itemsScrollView.frame.size.width;
     CGFloat maxW = self.itemsScrollView.contentSize.width;
-    CGFloat offsetX = visibleW/2 - sender.center.x;
+    CGFloat offsetX = sender.center.x - visibleW/2.0;
     if (maxW > visibleW) {
-        if (offsetX <= 0 && maxW+offsetX>=visibleW) {
+        if (offsetX >= 0 && maxW-offsetX>=visibleW) {
             [self.itemsScrollView setContentOffset:CGPointMake(offsetX, 0) animated:YES];
         }
     }

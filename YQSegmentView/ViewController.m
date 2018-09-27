@@ -18,7 +18,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    YQSegmentView *segmentView = [YQSegmentView segmentWithFrame:CGRectMake(0, 90, [UIScreen mainScreen].bounds.size.width, 60) titles:@[@"item0",@"item1",@"item2",@"item3",@"item4"] handler:^(NSInteger idx, UIButton *item) {
+    NSMutableArray *titlesArr = [[NSMutableArray alloc] init];
+    for (NSInteger i=0; i<15; i++) {
+        [titlesArr addObject:[NSString stringWithFormat:@"item%ld",i]];
+    }
+    YQSegmentView *segmentView = [YQSegmentView segmentWithFrame:CGRectMake(0, 90, [UIScreen mainScreen].bounds.size.width, 60) titles:titlesArr handler:^(NSInteger idx, UIButton *item) {
         //
     }];
     [segmentView setTitle:@"idx1" atIndex:1];
