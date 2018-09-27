@@ -13,6 +13,7 @@
 		4D6BEE9F215B9E0E00341542 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4D6BEE9E215B9E0E00341542 /* Assets.xcassets */; };
 		4D6BEEA2215B9E0E00341542 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4D6BEEA0215B9E0E00341542 /* LaunchScreen.storyboard */; };
 		4D6BEEA5215B9E0E00341542 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D6BEEA4215B9E0E00341542 /* main.m */; };
+		4D6BEEAE215B9EF500341542 /* YQSegmentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D6BEEAD215B9EF500341542 /* YQSegmentView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,8 @@
 		4D6BEEA1215B9E0E00341542 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4D6BEEA3215B9E0E00341542 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4D6BEEA4215B9E0E00341542 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		4D6BEEAC215B9EF500341542 /* YQSegmentView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = YQSegmentView.h; sourceTree = "<group>"; };
+		4D6BEEAD215B9EF500341542 /* YQSegmentView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YQSegmentView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,7 @@
 		4D6BEE94215B9E0B00341542 /* YQSegmentView */ = {
 			isa = PBXGroup;
 			children = (
+				4D6BEEAB215B9ED000341542 /* Source */,
 				4D6BEE95215B9E0B00341542 /* AppDelegate.h */,
 				4D6BEE96215B9E0B00341542 /* AppDelegate.m */,
 				4D6BEE98215B9E0B00341542 /* ViewController.h */,
@@ -69,6 +73,15 @@
 				4D6BEEA4215B9E0E00341542 /* main.m */,
 			);
 			path = YQSegmentView;
+			sourceTree = "<group>";
+		};
+		4D6BEEAB215B9ED000341542 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				4D6BEEAC215B9EF500341542 /* YQSegmentView.h */,
+				4D6BEEAD215B9EF500341542 /* YQSegmentView.m */,
+			);
+			path = Source;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,6 +156,7 @@
 			files = (
 				4D6BEE9A215B9E0B00341542 /* ViewController.m in Sources */,
 				4D6BEEA5215B9E0E00341542 /* main.m in Sources */,
+				4D6BEEAE215B9EF500341542 /* YQSegmentView.m in Sources */,
 				4D6BEE97215B9E0B00341542 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

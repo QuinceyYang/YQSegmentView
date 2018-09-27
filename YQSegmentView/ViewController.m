@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "YQSegmentView.h"
 
 @interface ViewController ()
 
@@ -17,6 +18,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    YQSegmentView *segmentView = [YQSegmentView segmentWithFrame:CGRectMake(0, 90, [UIScreen mainScreen].bounds.size.width, 60) titles:@[@"item0",@"item1",@"item2",@"item3",@"item4"] handler:^(NSInteger idx, UIButton *item) {
+        //
+    }];
+    [segmentView setTitle:@"idx1" atIndex:1];
+    [segmentView setTitleSelectedColor:UIColor.redColor unselectedColor:UIColor.grayColor];
+    [self.view addSubview:segmentView];
 }
 
 
