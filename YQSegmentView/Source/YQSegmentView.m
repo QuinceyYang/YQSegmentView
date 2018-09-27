@@ -33,11 +33,11 @@
     
     segmentView.btnItemsArr = [[NSMutableArray alloc] init];
     for (NSInteger i=0; i<titlesArr.count; i++) {
-        UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(15+i*(90+20), (itemsScrollView.frame.size.height-42)/2, 90, 42)];
+        UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(30+i*(90+20), (itemsScrollView.frame.size.height-42)/2, 90, 42)];
         [btn setTitleColor:UIColor.grayColor forState:UIControlStateNormal];
         [btn setTitleColor:UIColor.grayColor forState:UIControlStateHighlighted];
         [btn setTitleColor:UIColor.orangeColor forState:UIControlStateSelected];
-        btn.titleLabel.font = [UIFont systemFontOfSize:18];
+        btn.titleLabel.font = [UIFont boldSystemFontOfSize:16];
         btn.tag = i;
         [btn setTitle:titlesArr[i] forState:UIControlStateNormal];
         [btn addTarget:segmentView action:@selector(tapBtnItems:) forControlEvents:UIControlEventTouchUpInside];
@@ -53,7 +53,7 @@
         }
         btn.titleLabel.font = [UIFont systemFontOfSize:16];
     }
-    itemsScrollView.contentSize = CGSizeMake(CGRectGetMaxX(segmentView.btnItemsArr.lastObject.frame)+15, 0);
+    itemsScrollView.contentSize = CGSizeMake(CGRectGetMaxX(segmentView.btnItemsArr.lastObject.frame)+30, 0);
     
     UIButton *selectedBtn = segmentView.btnItemsArr.firstObject;
     UIView *line = [[UIView alloc] initWithFrame:CGRectMake(selectedBtn.frame.origin.x+0.1*selectedBtn.frame.size.width, CGRectGetMaxY(selectedBtn.frame), 0.8*selectedBtn.frame.size.width, 1.5)];
@@ -80,6 +80,30 @@
         return;
     }
     [self.btnItemsArr[idx] setTitle:title forState:UIControlStateNormal];
+    //layout frames
+    for (NSInteger i=0; i<_btnItemsArr.count; i++) {
+        UIButton *btn = _btnItemsArr[i];
+        UIFont *realFont = btn.titleLabel.font;
+        btn.titleLabel.font = [UIFont boldSystemFontOfSize:16];
+        CGSize bestSize = [btn sizeThatFits:CGSizeMake(0, 0)];
+        if (i==0) {
+            btn.frame = CGRectMake(btn.frame.origin.x, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
+        }
+        else {
+            btn.frame = CGRectMake(CGRectGetMaxX(_btnItemsArr[i-1].frame)+20, btn.frame.origin.y, bestSize.width, btn.frame.size.height);
+        }
+        btn.titleLabel.font = realFont;
+    }
+    //update indicate line
+    for (NSInteger i=0; i<_btnItemsArr.count; i++) {
+        if (_btnItemsArr[i].selected == YES) {
+            UIButton *sender = _btnItemsArr[i];
+            _indicateLine.frame = CGRectMake(sender.frame.origin.x+0.1*sender.frame.size.width, _indicateLine.frame.origin.y, sender.frame.size.width*0.8, _indicateLine.frame.size.height);
+        }
+    }
+    //update content size
+    _itemsScrollView.contentSize = CGSizeMake(CGRectGetMaxX(_btnItemsArr.lastObject.frame)+30, 0);
+
 }
 
 - (void)setTitleSelectedColor:(UIColor *)selColor unselectedColor:(UIColor *)unselColor
@@ -95,15 +119,29 @@
 #pragma mark - Actions
 - (void)tapBtnItems:(UIButton *)sender
 {
-    sender.selected = YES;
-    sender.titleLabel.font = [UIFont systemFontOfSize:18];
-    _indicateLine.frame = CGRectMake(sender.frame.origin.x+0.1*sender.frame.size.width, _indicateLine.frame.origin.y, sender.frame.size.width*0.8, _indicateLine.frame.size.height);
+    //选择焦点效果
     for (NSInteger i=0; i<_btnItemsArr.count; i++) {
-        if (sender != _btnItemsArr[i]) {
+        if (sender == _btnItemsArr[i]) {
+            sender.selected = YES;
+            sender.titleLabel.font = [UIFont boldSystemFontOfSize:16];
+        }
+        else {
             _btnItemsArr[i].selected = NO;
-            sender.titleLabel.font = [UIFont systemFontOfSize:16];
+            _btnItemsArr[i].titleLabel.font = [UIFont systemFontOfSize:16];
         }
     }
+    _indicateLine.frame = CGRectMake(sender.frame.origin.x+0.1*sender.frame.size.width, _indicateLine.frame.origin.y, sender.frame.size.width*0.8, _indicateLine.frame.size.height);
+
+    ////{ 焦点居中
+    CGFloat visibleW = self.itemsScrollView.frame.size.width;
+    CGFloat maxW = self.itemsScrollView.contentSize.width;
+    CGFloat offsetX = visibleW/2 - sender.center.x;
+    if (maxW > visibleW) {
+        if (offsetX <= 0 && maxW+offsetX>=visibleW) {
+            [self.itemsScrollView setContentOffset:CGPointMake(offsetX, 0) animated:YES];
+        }
+    }
+    ////}
     if (self.handler) {
         self.handler(sender.tag, sender);
     }
