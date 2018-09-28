@@ -23,8 +23,16 @@
 
 @implementation YQSegmentView
 
-
+/**
+ * 初始化
+ */
 + (instancetype)segmentWithFrame:(CGRect)frame titles:(NSArray <NSString *>*)titlesArr handler:(void (^)(NSInteger idx, UIButton *item))handler
+{
+    return [self segmentWithFrame:frame titles:titlesArr leftSpace:30 middleSpace:20 rightSpace:30 handler:handler];
+}
+
+
++ (instancetype)segmentWithFrame:(CGRect)frame titles:(NSArray <NSString *>*)titlesArr leftSpace:(CGFloat)leftSpace middleSpace:(CGFloat)middleSpace rightSpace:(CGFloat)rightSpace handler:(void (^)(NSInteger idx, UIButton *item))handler
 {
     YQSegmentView *segmentView = [[YQSegmentView alloc] initWithFrame:frame];
     UIScrollView *scrollView = [[UIScrollView alloc] initWithFrame:segmentView.bounds];
@@ -38,9 +46,9 @@
     
     segmentView.btnItemsArr = [[NSMutableArray alloc] init];
     segmentView.separateLineArr = [[NSMutableArray alloc] init];
-    segmentView.leftSpace   = 30;
-    segmentView.middleSpace = 20;
-    segmentView.rightSpace  = 30;
+    segmentView.leftSpace   = leftSpace;//30;
+    segmentView.middleSpace = middleSpace;//20;
+    segmentView.rightSpace  = rightSpace;//30;
     for (NSInteger i=0; i<titlesArr.count; i++) {
         UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(segmentView.leftSpace+i*(90+segmentView.middleSpace), (scrollView.frame.size.height-42)/2, 90, 42)];
         [btn setTitleColor:UIColor.grayColor forState:UIControlStateNormal];
@@ -170,6 +178,31 @@
     self.indicateLine.backgroundColor = selColor;
 }
 
+- (void)setIndicateLineColor:(UIColor *)color
+{
+    _indicateLine.backgroundColor = color;
+}
+
+#pragma mark -
+- (void)selectIndex:(NSInteger)idx
+{
+    if (idx >= _btnItemsArr.count) {
+        NSLog(@"<%s line%d> Error :",__PRETTY_FUNCTION__,__LINE__);
+        return;
+    }
+    [self tapBtnItems:_btnItemsArr[idx]];
+}
+
+- (NSInteger)getSelectedIndex
+{
+    NSInteger idx=0;
+    for (NSInteger i=0; i<_btnItemsArr.count; i++) {
+        if (_btnItemsArr[i].selected) {
+            idx = i;
+        }
+    }
+    return idx;
+}
 
 #pragma mark - Actions
 - (void)tapBtnItems:(UIButton *)sender
