@@ -12,6 +12,7 @@
 
 @property (strong, nonatomic) UIScrollView *scrollView;///<装多个标签的容器
 @property (strong, nonatomic) NSMutableArray <UIButton *>*btnItemsArr;///<横排的多个按钮
+@property (assign, nonatomic) BOOL enabledSeparateLine;///<是否使能竖分割线
 @property (strong, nonatomic) NSMutableArray <UIView *>*separateLineArr;///<竖分割线
 @property (copy, nonatomic) void (^handler)(NSInteger idx, UIButton *item);
 
@@ -105,33 +106,6 @@
 }
 */
 
-#pragma mark - setter getter
-- (void)setEnabledSeparateLine:(BOOL)enabledSeparateLine
-{
-    _enabledSeparateLine = enabledSeparateLine;
-    if (enabledSeparateLine) {
-        //
-        for (NSInteger i=0; i<_separateLineArr.count; i++) {
-            [_separateLineArr[i] removeFromSuperview];
-        }
-        [_separateLineArr removeAllObjects];
-        //
-        for (NSInteger i=0; i<_btnItemsArr.count-1; i++) {
-            UIButton *btn = _btnItemsArr[i];
-            UIView *line = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(btn.frame)+0.5*_middleSpace, btn.frame.origin.y+0.25*btn.frame.size.height, 1, 0.5*btn.frame.size.height)];
-            line.backgroundColor = UIColor.greenColor;
-            [_scrollView addSubview:line];
-            [_separateLineArr addObject:line];
-        }
-    }
-    else {
-        for (NSInteger i=0; i<_separateLineArr.count; i++) {
-            [_separateLineArr[i] removeFromSuperview];
-        }
-        [_separateLineArr removeAllObjects];
-    }
-}
-
 #pragma mark - config style
 - (void)setTitle:(NSString *)title atIndex:(NSUInteger)idx
 {
@@ -181,6 +155,32 @@
 - (void)setIndicateLineColor:(UIColor *)color
 {
     _indicateLine.backgroundColor = color;
+}
+
+- (void)setEnabledSeparateLine:(BOOL)enabledSeparateLine color:(UIColor *)color
+{
+    _enabledSeparateLine = enabledSeparateLine;
+    if (enabledSeparateLine) {
+        //
+        for (NSInteger i=0; i<_separateLineArr.count; i++) {
+            [_separateLineArr[i] removeFromSuperview];
+        }
+        [_separateLineArr removeAllObjects];
+        //
+        for (NSInteger i=0; i<_btnItemsArr.count-1; i++) {
+            UIButton *btn = _btnItemsArr[i];
+            UIView *line = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(btn.frame)+0.5*_middleSpace, btn.frame.origin.y+0.3*btn.frame.size.height, 1, 0.4*btn.frame.size.height)];
+            line.backgroundColor = color;
+            [_scrollView addSubview:line];
+            [_separateLineArr addObject:line];
+        }
+    }
+    else {
+        for (NSInteger i=0; i<_separateLineArr.count; i++) {
+            [_separateLineArr[i] removeFromSuperview];
+        }
+        [_separateLineArr removeAllObjects];
+    }
 }
 
 #pragma mark -

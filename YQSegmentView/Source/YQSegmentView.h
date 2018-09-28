@@ -11,7 +11,6 @@
 @interface YQSegmentView : UIView
 
 @property (strong, nonatomic) UIView *indicateLine;///<短线（指示当前被选中的item）
-@property (assign, nonatomic) BOOL enabledSeparateLine;///<是否使能竖分割线
 
 /**
  * 初始化
@@ -33,6 +32,11 @@
 - (void)setTitle:(NSString *)title atIndex:(NSUInteger)idx;
 - (void)setTitleSelectedColor:(UIColor *)selColor unselectedColor:(UIColor *)unselColor;
 - (void)setIndicateLineColor:(UIColor *)color;
+/**
+ * 设置item之间是否有分割线，
+ * 当enabledSeparateLine=YES是，color为分割线颜色，当enabledSeparateLine=NO是，color无效
+ */
+- (void)setEnabledSeparateLine:(BOOL)enabledSeparateLine color:(UIColor *)color;
 
 - (void)selectIndex:(NSInteger)idx;
 - (NSInteger)getSelectedIndex;
