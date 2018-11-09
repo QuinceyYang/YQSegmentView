@@ -192,6 +192,49 @@
     }
     [self tapBtnItems:_btnItemsArr[idx]];
 }
+/**
+ * 选中某个item，不会回调hander（block）
+ */
+- (void)selectIndexUnCallBack:(NSInteger)idx
+{
+    if (idx >= _btnItemsArr.count) {
+        NSLog(@"<%s line%d> Error :",__PRETTY_FUNCTION__,__LINE__);
+        return;
+    }
+    UIButton *sender = _btnItemsArr[idx];
+    {
+        //选择焦点效果
+        for (NSInteger i=0; i<_btnItemsArr.count; i++) {
+            if (sender == _btnItemsArr[i]) {
+                sender.selected = YES;
+                sender.titleLabel.font = [UIFont boldSystemFontOfSize:16];
+            }
+            else {
+                _btnItemsArr[i].selected = NO;
+                _btnItemsArr[i].titleLabel.font = [UIFont systemFontOfSize:16];
+            }
+        }
+        _indicateLine.frame = CGRectMake(sender.frame.origin.x+0.1*sender.frame.size.width, _indicateLine.frame.origin.y, sender.frame.size.width*0.8, _indicateLine.frame.size.height);
+        
+        ////{ 焦点居中
+        if (self.scrollView.scrollEnabled) {
+            CGFloat visibleW = self.scrollView.frame.size.width;
+            CGFloat maxW = self.scrollView.contentSize.width;
+            CGFloat offsetX = sender.center.x - visibleW/2.0;
+            if (maxW > visibleW) {
+                if (offsetX >= 0) {
+                    if (maxW-offsetX>=visibleW) {
+                        [self.scrollView setContentOffset:CGPointMake(offsetX, 0) animated:YES];
+                    }
+                    else {
+                        [self.scrollView setContentOffset:CGPointMake(maxW-visibleW, 0) animated:YES];
+                    }
+                }
+            }
+        }
+        ////}
+    }
+}
 
 - (NSInteger)getSelectedIndex
 {

@@ -38,7 +38,16 @@
  */
 - (void)setEnabledSeparateLine:(BOOL)enabledSeparateLine color:(UIColor *)color;
 
+/**
+ * 选中某个item，会回调hander（block）
+ */
 - (void)selectIndex:(NSInteger)idx;
+
+/**
+ * 选中某个item，不会回调hander（block）
+ */
+- (void)selectIndexUnCallBack:(NSInteger)idx;
+
 - (NSInteger)getSelectedIndex;
 
 @end
